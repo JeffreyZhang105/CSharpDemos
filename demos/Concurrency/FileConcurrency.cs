@@ -13,7 +13,6 @@ namespace demos.Concurrency
     {
         public static string OpenFile(string path, int threadCount)
         {
-            var result = new StringBuilder();
             var results = new string[threadCount];
             var finished = 0;
             var succeed = 0;
@@ -50,11 +49,7 @@ namespace demos.Concurrency
 
                     // print thread infomation and result.
                     results[i1] = string.Format("time: {0}, num: {1:D3}, id: {2:D3}, {3}\r\n",
-                        DateTime.Now.ToString("mm-ss.fff"),
-                        i1,
-                        Thread.CurrentThread.ManagedThreadId,
-                        fileResult
-                        );
+                        DateTime.Now.ToString("mm-ss.fff"), i1, Thread.CurrentThread.ManagedThreadId, fileResult);
                 }));
                 thread.Start();
             }
@@ -67,13 +62,17 @@ namespace demos.Concurrency
             {
                 Thread.Sleep(1);
             }
+
+            // append all results together.
+            var resultBuilder = new StringBuilder();
             foreach (var s in results)
             {
-                result.Append(s);
+                resultBuilder.Append(s);
             }
 
-            result.Append(succeed + "/" + threadCount + " succeeded, ratio: " + ((double) succeed/threadCount)*100 + "%");
-            return result.ToString();
+            resultBuilder.Append(succeed + "/" + threadCount + " succeeded, ratio: " +
+                                 ((double) succeed/threadCount)*100 + "%");
+            return resultBuilder.ToString();
         }
     }
 }
