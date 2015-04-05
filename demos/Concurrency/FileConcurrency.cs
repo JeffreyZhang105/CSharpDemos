@@ -16,6 +16,8 @@ namespace demos.Concurrency
             var results = new string[threadCount];
             var finished = 0;
             var succeed = 0;
+            var lockerFinished = new object();
+            var lockerSucceed = new object();
 
             var start = false; // to control threads
             for (var i = 0; i < threadCount; i++)
@@ -34,7 +36,10 @@ namespace demos.Concurrency
                             var buff = new byte[fs.Length];
                             fs.Read(buff, 0, buff.Length);
                             fileResult += "size: " + buff.Length;
-                            succeed++;
+                            lock (lockerSucceed)
+                            {
+                                succeed++;
+                            }
                         }
                     }
                     catch (IOException e)
@@ -43,7 +48,10 @@ namespace demos.Concurrency
                     }
                     finally
                     {
-                        finished++;
+                        lock (lockerFinished)
+                        {
+                            finished++;
+                        }
                         if (fs != null) fs.Close();
                     }
 

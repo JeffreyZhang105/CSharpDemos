@@ -7,13 +7,13 @@ using demos.Concurrency;
 
 namespace demos
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            FileConcurrency.OpenFile("", 200);
+            Console.Write(FileConcurrency.OpenFile(@"D:\Codes\Demos\_old\ASP.net\CSSFriendly_1.0.zip", 200));
 
-
+            Console.ReadLine();
         }
     }
 }
