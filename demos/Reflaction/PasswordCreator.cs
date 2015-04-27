@@ -8,9 +8,9 @@ namespace demos.Reflaction
     {
         public int ValueBit { get; private set; }
 
-        public ValueBitAttribute(int valueBit)
+        public ValueBitAttribute(int bit)
         {
-            this.ValueBit = valueBit;
+            ValueBit = bit;
         }
     }
 
@@ -24,18 +24,17 @@ namespace demos.Reflaction
 
         [ValueBit(3)] private List<int> upperList = new List<int>();
 
-        private  List<int> characterList=new List<int>();
+        private List<int> characterList = new List<int>();
 
         public PasswordCreator()
         {
-            Func<int, int, List<int>> toRange =
-                (int from, int to) =>
-                {
-                    var result = new List<int>();
-                    for (int i = from; i <= to; i++)
-                        result.Add(i);
-                    return result;
-                };
+            Func<int, int, List<int>> toRange = (from, to) =>
+            {
+                var result = new List<int>();
+                for (var i = from; i <= to; i++)
+                    result.Add(i);
+                return result;
+            };
 
             markerList.Add(0x21);
             markerList.AddRange(toRange(0x23, 0x26));
@@ -46,20 +45,32 @@ namespace demos.Reflaction
             upperList.AddRange(toRange(0x61, 0x7a));
         }
 
+        /// <summary>
+        /// Create renadom password by specified type and length.
+        /// </summary>
+        /// <param name="type">
+        /// password type.
+        /// 
+        /// </param>
+        /// <param name="length">password length</param>
+        /// <returns></returns>
         public string CreatePassword(int type, int length)
         {
             var result = string.Empty;
 
-            var t = GetType();
+            var myType = GetType();
             var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var members = t.GetMembers(flags);
+            var members = myType.GetMembers(flags);
 
             foreach (var member in members)
             {
                 var bitAttr = member.GetCustomAttribute(typeof (ValueBitAttribute)) as ValueBitAttribute;
+
+                // If the bit specified by customized attribute fits the corresponding bit of given password 
+                // type, add the field to charactor list. 
                 if (bitAttr != null && ((1 << bitAttr.ValueBit - 1 | type) == type))
                 {
-                    var fieldInfo = t.GetField(member.Name, flags);
+                    var fieldInfo = myType.GetField(member.Name, flags);
                     if (fieldInfo != null)
                     {
                         var list = fieldInfo.GetValue(this) as List<int>;
@@ -71,11 +82,12 @@ namespace demos.Reflaction
                 }
             }
 
+            // Randomly select specified number of characters to make the demanded string.
             var random = new Random();
             while (result.Length < length)
             {
                 var index = random.Next(0, characterList.Count);
-                result += (char)characterList[index];
+                result += (char) characterList[index];
             }
 
             return result;
