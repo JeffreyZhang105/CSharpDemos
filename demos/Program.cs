@@ -14,15 +14,17 @@ namespace demos
         [STAThread]
         private static void Main(string[] args)
         {
-            //Console.Write(FileConcurrency.OpenFile(@"D:\Codes\Demos\_old\ASP.net\CSSFriendly_1.0.zip", 200));
-            //Console.ReadLine();
+            //  Console.Write(FileConcurrency.OpenFile(@"D:\Codes\Demos\_old\ASP.net\CSSFriendly_1.0.zip", 200));
+            //  Console.ReadLine();
 
-            while (Console.ReadKey().Key != ConsoleKey.Escape)
-            {
-                var password = new PasswordCreator().CreatePassword(0xFF, 10);
-                Console.WriteLine(password);
-                Clipboard.SetDataObject(password);
-            }
+            //  while (Console.ReadKey().Key != ConsoleKey.Escape)
+            //  {
+            //      var password = new PasswordCreator().CreatePassword(0xFF, 10);
+            //      Console.WriteLine(password);
+            //      Clipboard.SetText(password);
+            //  }
+
+
         }
     }
 }
