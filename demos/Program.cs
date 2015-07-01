@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using demos.Concurrency;
 using demos.Reflaction;
+using demos.Network;
 
 namespace demos
 {
@@ -14,9 +15,11 @@ namespace demos
         [STAThread]
         private static void Main(string[] args)
         {
+            //  // File concurrency.
             //  Console.Write(FileConcurrency.OpenFile(@"D:\Codes\Demos\_old\ASP.net\CSSFriendly_1.0.zip", 200));
             //  Console.ReadLine();
 
+            //  // Customized attribute.
             //  while (Console.ReadKey().Key != ConsoleKey.Escape)
             //  {
             //      var password = new PasswordCreator().CreatePassword(0xFF, 10);
@@ -24,7 +27,13 @@ namespace demos
             //      Clipboard.SetText(password);
             //  }
 
+            // // Concurrent downloading.
+            var downloadTarget = "http://download-cf.jetbrains.com/resharper/JetBrains.ReSharperUltimate.2015.1.1.exe"; // ///////////////////
+            var downloader = new HttpDownloader();
+            downloader.StartDownload(downloadTarget, "", 5);
 
+            // Keep console.
+            Console.ReadLine();
         }
     }
 }
