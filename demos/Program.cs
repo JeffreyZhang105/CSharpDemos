@@ -29,8 +29,9 @@ namespace demos
 
             // // Concurrent downloading.
             var downloadTarget = "http://download-cf.jetbrains.com/resharper/JetBrains.ReSharperUltimate.2015.1.1.exe"; // ///////////////////
-            var downloader = new HttpDownloader();
-            downloader.StartDownload(downloadTarget, "", 5);
+            var localTarget = @"E:\downloadtest.exe";
+            var downloader = new HttpDownloader(downloadTarget, localTarget);
+            downloader.StartDownload(5);
 
             // Keep console.
             Console.ReadLine();

@@ -6,74 +6,153 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace demos.Network
 {
     public class HttpDownloader
     {
-        private class downloadStatus
-        {
-            public long total { get; set; }
-            public long completion { get; set; }
-        }
-        private List<downloadStatus> ThreadsStatus = new List<downloadStatus>();
+        // Maximun block size: 10MB.
+        private const long BlockSize = 10240;
 
-        // Get size of the file targeted by url, returns size of file by Byte.
+        private readonly DownloadStatus _status;
+
+        private class DownloadStatus
+        {
+            private readonly object _locker;
+            private long _allocated;
+
+            public long Allocated
+            {
+                get { return _allocated; }
+                set
+                {
+                    lock (_locker)
+                    {
+                        _allocated = value;
+                    }
+                }
+            }
+
+            private int _threadCount;
+
+            public int ThreadCount
+            {
+                get { return _threadCount; }
+                set
+                {
+                    lock (_locker)
+                    {
+                        _threadCount = value;
+                    }
+                }
+            }
+
+            private long _targetSize;
+
+            public long TargetSize
+            {
+                get { return _targetSize; }
+                set
+                {
+                    lock (_locker)
+                    {
+                        _targetSize = value;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Url { get; private set; }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string LocalTarget { get; private set; }
+
+            public DownloadStatus(string url, string localTarget, object locker)
+            {
+                this.Url = url;
+                this.LocalTarget = localTarget;
+                _locker = locker;
+            }
+        }
+
+        // Get size of the file targeted by url, returns size of file in Byte.
         private long getResourceLength(string url)
         {
             var result = 0L;
 
             var request = WebRequest.CreateDefault(new Uri(url)) as HttpWebRequest;
-            request.Method = "HEAD";
-            request.Timeout = 5000;
-            try
+            if (request != null)
             {
-                var response = request.GetResponse() as HttpWebResponse;
-                if (response != null && response.StatusCode == HttpStatusCode.OK)
+                request.Method = "HEAD";
+                request.Timeout = 5000;
+                try
                 {
-                    result = response.ContentLength;
+                    var response = request.GetResponse() as HttpWebResponse;
+                    if (response != null && response.StatusCode == HttpStatusCode.OK)
+                    {
+                        result = response.ContentLength;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.StackTrace);
+                }
             }
 
             return result;
+        }
+
+        private void DownloadNextBlock()
+        {
+            var thread = new Thread(new ThreadStart(delegate
+            {
+                var filereader = new HttpDownloadThread((int) (_status.Allocated/BlockSize));
+                filereader.DownloadStatusChanged += DownloadThread_DownloadStatusChanged;
+                filereader.DownloadFilePart(
+                    _status.Url, _status.LocalTarget, _status.Allocated + 1,
+                    _status.Allocated + BlockSize > _status.TargetSize
+                        ? _status.TargetSize
+                        : _status.Allocated + BlockSize);
+            }));
+            thread.Start();
+            _status.Allocated += BlockSize;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="url"></param>
-        /// <param name="localTarget"></param>
-        /// <param name="threadCount"></param>
-        public void StartDownload(string url, string localTarget, int threadCount)
+        /// <param name="localtarget"></param>
+        public HttpDownloader(string url, string localtarget)
         {
-            var targetSize = getResourceLength(url);
-            var remainder = (targetSize * threadCount - 1);
-            var blockSize = (targetSize - remainder) / (threadCount - 1);
-
-            if (targetSize > 0)
-            {
-                for (int tNum = 0; tNum < threadCount; tNum++)
-                {
-                    var from = blockSize * (tNum - 1);
-                    var to = from + (tNum == threadCount - 1 ? remainder : blockSize);
-                    var thread = new Thread(new ThreadStart(delegate
-                      {
-                          var filereader = new HttpDownloadThread();
-                          filereader.DownloadStatusChanged += DownloadThread_DownloadStatusChanged;
-                          new HttpDownloadThread().ReadFile(url, localTarget, from, to);
-                      }));
-                    thread.Start();
-                }
-            }
+            this._status = new DownloadStatus(url, localtarget, new object());
         }
 
         private void DownloadThread_DownloadStatusChanged(object sender, DownloadThreadEventArgs e)
         {
-            if
+            if (e.Completion == 1 && _status.Allocated < _status.TargetSize)
+            {
+                DownloadNextBlock();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="threadCount"></param>
+        public void StartDownload(int threadCount)
+        {
+            _status.TargetSize = getResourceLength(_status.Url);
+
+            while (_status.Allocated < _status.TargetSize && _status.ThreadCount < threadCount)
+            {
+                DownloadNextBlock();
+            }
         }
     }
 }
