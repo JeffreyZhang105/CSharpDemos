@@ -46,28 +46,45 @@ namespace demos.Concurrency
         /// <param name="to"></param>
         public void DownloadFilePart(string url, string localTarget, long from, long to)
         {
-            var request = WebRequest.Create(url) as HttpWebRequest;
-            var buffer = new byte[BufferSize];
-            var fileStream = new FileStream(localTarget + "_" + ThreadId, FileMode.Create);
-            if (request != null)
+            Console.WriteLine($"thread: {ThreadId} start to download, from: {from}, to: {to}");
+            var tryCount = 5;
+            while (tryCount > 0)
             {
-                request.AllowAutoRedirect = true;
-                request.AddRange(from, to);
-                var response = request.GetResponse().GetResponseStream();
-
-                if (response != null)
+                tryCount--;
+                FileStream fileStream = null;
+                try
                 {
-                    var read = response.Read(buffer, 0, BufferSize);
-                    while (read > 0)
+                    var request = WebRequest.Create(url) as HttpWebRequest;
+                    var buffer = new byte[BufferSize];
+                    fileStream = new FileStream(localTarget + "_" + ThreadId, FileMode.Create);
+                    if (request != null)
                     {
-                        fileStream.Write(buffer, 0, buffer.Length);
-                        read = response.Read(buffer, 0, BufferSize);
+                        request.AllowAutoRedirect = true;
+                        request.AddRange(from, to);
+                        var response = request.GetResponse().GetResponseStream();
+
+                        if (response != null)
+                        {
+                            var read = response.Read(buffer, 0, BufferSize);
+                            while (read > 0)
+                            {
+                                fileStream.Write(buffer, 0, buffer.Length);
+                                read = response.Read(buffer, 0, BufferSize);
+                            }
+                            response.Close();
+                        }
                     }
-                    response.Close();
+                    Console.WriteLine($"thread: {ThreadId} download finished, from: {from}, to: {to}");
+                    fileStream.Close();
+                    tryCount = 0;
+                }
+                catch (Exception ex)
+                {
+                    fileStream?.Close();
+                    if (tryCount == 0) tryCount = -1;
+                    Console.WriteLine($"thread: {ThreadId} {ex.Message}, retry");
                 }
             }
-            fileStream.Close();
-
             DownloadStatusChanged?.Invoke(this, new DownloadThreadEventArgs(ThreadId, 1));
         }
     }

@@ -45,7 +45,7 @@
     <Compile Include="Binary\TextBinaryReader.cs" />
     <Compile Include="Concurrency\FileConcurrency.cs" />
     <Compile Include="Concurrency\HttpDownloadThread.cs" />
-    <Compile Include="Network\HttpDownloader.cs" />
+    <Compile Include="Concurrency\HttpDownloader.cs" />
     <Compile Include="Reflaction\PasswordCreator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Asynchronism\" />
+    <Folder Include="Network\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

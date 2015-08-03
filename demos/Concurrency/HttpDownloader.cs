@@ -8,13 +8,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace demos.Network
+namespace demos.Concurrency
 {
     public class HttpDownloader
     {
         // Maximun block size: 10MB.
-        private const long BlockSize = 10240;
+        private const long BlockSize = 1024*1024*10;
 
+        /// <summary>
+        /// download status mark
+        /// </summary>
         private readonly DownloadStatus _status;
 
         private class DownloadStatus
@@ -109,18 +112,20 @@ namespace demos.Network
 
         private void DownloadNextBlock()
         {
+            var threadId = (int) (_status.Allocated/BlockSize);
+            var from = _status.Allocated;
+            var to = _status.Allocated + BlockSize > _status.TargetSize
+                ? _status.TargetSize
+                : _status.Allocated + BlockSize;
             var thread = new Thread(new ThreadStart(delegate
             {
-                var filereader = new HttpDownloadThread((int) (_status.Allocated/BlockSize));
+                var filereader = new HttpDownloadThread(threadId);
                 filereader.DownloadStatusChanged += DownloadThread_DownloadStatusChanged;
-                filereader.DownloadFilePart(
-                    _status.Url, _status.LocalTarget, _status.Allocated + 1,
-                    _status.Allocated + BlockSize > _status.TargetSize
-                        ? _status.TargetSize
-                        : _status.Allocated + BlockSize);
+                filereader.DownloadFilePart(_status.Url, _status.LocalTarget, from, to);
             }));
-            thread.Start();
+            _status.ThreadCount++;
             _status.Allocated += BlockSize;
+            thread.Start();
         }
 
         /// <summary>
