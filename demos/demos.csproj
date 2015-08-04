@@ -44,8 +44,8 @@
   <ItemGroup>
     <Compile Include="Binary\TextBinaryReader.cs" />
     <Compile Include="Concurrency\FileConcurrency.cs" />
-    <Compile Include="Concurrency\HttpDownloadThread.cs" />
     <Compile Include="Concurrency\HttpDownloader.cs" />
+    <Compile Include="Concurrency\HttpDownloadController.cs" />
     <Compile Include="Reflaction\PasswordCreator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

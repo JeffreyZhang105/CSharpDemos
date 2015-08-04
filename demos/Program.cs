@@ -27,9 +27,9 @@ namespace demos
             //  }
 
             // // Concurrent downloading.
-            var downloadTarget = "http://download-cf.jetbrains.com/resharper/JetBrains.ReSharperUltimate.2015.1.1.exe"; // ///////////////////
-            var localTarget = @"E:\downloadtest.exe";
-            var downloader = new HttpDownloader(downloadTarget, localTarget);
+            var downloadTarget = @"http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/mars/R/eclipse-jee-mars-R-win32-x86_64.zip"; // ///////////////////
+            var localTarget = @"E:\";
+            var downloader = new HttpDownloadController(downloadTarget, localTarget);
             downloader.StartDownload(5);
 
             // Keep console.
