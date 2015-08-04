@@ -101,16 +101,6 @@ namespace demos.Concurrency
             thread.Start();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="localDir"></param>
-        public HttpDownloadController(string url, string localDir)
-        {
-            Initialize(url, localDir);
-        }
-
         private void DownloadThread_DownloadStatusChanged(object sender, DownloadThreadEventArgs e)
         {
             if (e.Completion == 1)
@@ -124,18 +114,6 @@ namespace demos.Concurrency
                     MergeTempFiles();
                     Console.WriteLine("download finished. ");
                 }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="threadCount"></param>
-        public void StartDownload(int threadCount)
-        {
-            while (_status.Allocated < _status.TargetSize && _status.ThreadCount < threadCount)
-            {
-                DownloadNextBlock();
             }
         }
 
@@ -160,6 +138,28 @@ namespace demos.Concurrency
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="localDir"></param>
+        public HttpDownloadController(string url, string localDir)
+        {
+            Initialize(url, localDir);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="threadCount"></param>
+        public void StartDownload(int threadCount)
+        {
+            while (_status.Allocated < _status.TargetSize && _status.ThreadCount < threadCount)
+            {
+                DownloadNextBlock();
             }
         }
     }
