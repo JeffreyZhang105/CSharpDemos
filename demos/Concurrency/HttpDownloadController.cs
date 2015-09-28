@@ -62,7 +62,6 @@ namespace demos.Concurrency
                         (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Redirect))
                     {
                         localFileName = Regex.Match(response.ResponseUri.ToString(), @"(?<=/)[^/]+$").Value;
-
                         targetSize = response.ContentLength;
                     }
                 }
