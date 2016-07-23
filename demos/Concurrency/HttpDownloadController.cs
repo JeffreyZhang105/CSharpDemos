@@ -22,11 +22,30 @@ namespace demos.Concurrency
         /// </summary>
         private DownloadStatus _status;
 
+        /// <summary>
+        /// Provides thread-safe values of download status.
+        /// </summary>
         private class DownloadStatus
         {
-            public long Allocated { get; set; }
+            private long _allocated;
+            /// <summary>
+            /// Allocated position of download object.
+            /// </summary>
+            public long Allocated
+            {
+                get { return _allocated; }
+                set { Interlocked.Exchange(ref _allocated, value); }
+            }
 
-            public int ThreadCount { get; set; }
+            private int _threadCount;
+            /// <summary>
+            /// Count of currently started threads.
+            /// </summary>
+            public int ThreadCount
+            {
+                get { return _threadCount; }
+                set { Interlocked.Exchange(ref _threadCount, value); }
+            }
 
             public long TargetSize { get; }
 
