@@ -49,6 +49,7 @@
     <Compile Include="Reflaction\PasswordCreator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamStudy\MyStream.cs" />
     <Compile Include="Temp\LunaLogAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
