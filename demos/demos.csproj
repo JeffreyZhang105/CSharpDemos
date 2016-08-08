@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Binary\TextBinaryReader.cs" />
+    <Compile Include="Asynchronism\AsyncAndAwait.cs" />
     <Compile Include="Concurrency\FileConcurrency.cs" />
     <Compile Include="Concurrency\HttpDownloader.cs" />
     <Compile Include="Concurrency\HttpDownloadController.cs" />
@@ -54,7 +55,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Asynchronism\" />
     <Folder Include="Network\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
