@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,25 +10,36 @@ namespace demos.Asynchronism
 {
     public class AsyncAndAwait
     {
-        public async static Task<string> GetStringAsync()
+        public async Task<string> GetStringAsync(string param)
         {
             var result = string.Empty;
 
-            Thread.Sleep(10000);
+            var started = DateTime.Now;
+            while ((DateTime.Now - started).TotalSeconds < 5)
+            {
+
+            }
 
             result = Guid.NewGuid().ToString();
             return result;
         }
 
-        public string TestAsync()
+        public async void TestAsync()
         {
-            var result = string.Empty;
+            Debug.WriteLine(">>>>>1");
+            string result1 = await GetStringAsync(Guid.NewGuid().ToString());
+            Debug.WriteLine(">>>>>2");
+            string result2 = await GetStringAsync(Guid.NewGuid().ToString());
+            Debug.WriteLine(">>>>>3");
 
-            var task = GetStringAsync();
-            var awaiter = task.GetAwaiter();
-            result = awaiter.GetResult();
+            var task3 = DateTime.Now;
+        }
 
-            return result;
+        public void test()
+        {
+            TestAsync();
+            Debug.WriteLine(">>>>>4");
+            var a = 1;
         }
     }
 }

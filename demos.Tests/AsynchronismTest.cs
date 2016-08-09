@@ -9,16 +9,15 @@ using System.Threading.Tasks;
 namespace demos.Tests
 {
     [TestFixture]
-    public class TestClass
+    public class AsynchronismTest
     {
         [Test]
-        public void TestMethod()
+        public void TestAsyncTest()
         {
             var target = new AsyncAndAwait();
+            target.test();
 
-            var result = target.TestAsync();
-
-            Assert.Pass();
+            var a = 4;
         }
     }
 }
