@@ -12,34 +12,36 @@ namespace demos.Asynchronism
     {
         public async Task<string> GetStringAsync(string param)
         {
-            var result = string.Empty;
+            Debug.WriteLine("GetStringAsync: var result = string.Empty;");
 
             var started = DateTime.Now;
-            while ((DateTime.Now - started).TotalSeconds < 5)
-            {
+            var result = await Task.Factory.StartNew(() =>
+              {
+                  var result1 = string.Empty;
+                  while ((DateTime.Now - started).TotalSeconds < 5)
+                  {
+                      Debug.WriteLine("await Task.Factory.StartNew(() =>...");
+                  }
+                  return result1;
+              });
 
-            }
-
-            result = Guid.NewGuid().ToString();
+            Debug.WriteLine("GetStringAsync:  await Task.Factory.StartNew(() =>...");
             return result;
         }
 
         public async void TestAsync()
         {
-            Debug.WriteLine(">>>>>1");
-            string result1 = await GetStringAsync(Guid.NewGuid().ToString());
-            Debug.WriteLine(">>>>>2");
-            string result2 = await GetStringAsync(Guid.NewGuid().ToString());
-            Debug.WriteLine(">>>>>3");
+            var task1 = GetStringAsync(Guid.NewGuid().ToString());
+            Debug.WriteLine(DateTime.Now + ", TestAsync:  var task1 = GetStringAsync(Guid.NewGuid().ToString());");
+            var result1 = await task1;
 
-            var task3 = DateTime.Now;
+            Debug.WriteLine("TestAsync:  string result2 = await task2;");
         }
 
-        public void test()
+
+        public void TestAsync1()
         {
-            TestAsync();
-            Debug.WriteLine(">>>>>4");
-            var a = 1;
+            var task1 = GetStringAsync(Guid.NewGuid().ToString()).GetAwaiter().GetResult();
         }
     }
 }

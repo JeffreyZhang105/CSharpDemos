@@ -15,9 +15,11 @@ namespace demos.Tests
         public void TestAsyncTest()
         {
             var target = new AsyncAndAwait();
-            target.test();
+            target.TestAsync();
+            while (true)
+            {
 
-            var a = 4;
+            }
         }
     }
 }
