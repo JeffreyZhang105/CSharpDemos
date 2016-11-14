@@ -43,7 +43,7 @@ namespace demos.StreamStudy
         public void test()
         {
             var ms=new MemoryStream();
-            ms.Write(buffer: new byte[](),offset: 0,count: 0);
+            // ms.Write(buffer: new byte[](),offset: 0,count: 0);
         }
     }
 }
