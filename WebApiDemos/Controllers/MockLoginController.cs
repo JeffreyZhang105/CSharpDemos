@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Text;
 using System.Web.Http;
 using WebApiDemos.Filters;
 
@@ -16,14 +17,18 @@ namespace WebApiDemos.Controllers
         [HttpGet]
         [Route("login")]
         [MyweatherExceptionFilter]
-        public string Post(FormDataCollection datas)
+        public HttpResponseMessage Post(FormDataCollection datas)
         {
             //var uid = datas.Get("username");
             //var password = datas.Get("password");
 
             var token = Guid.NewGuid().ToString("N");
             var responseStr = "{\"result\": \"OK\", \"token\": \"" + token + "\"}";
-            return responseStr;
+            var response = new HttpResponseMessage
+            {
+                Content = new StringContent(responseStr, Encoding.UTF8, "application/json")
+            };
+            return response;
         }
     }
 }
