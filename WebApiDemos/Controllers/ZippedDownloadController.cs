@@ -11,6 +11,8 @@ using System.Web.Http;
 using System.Web.Mvc;
 using WebApiDemos.Filters;
 using Ionic.Zip;
+using Microsoft.Ajax.Utilities;
+using WebGrease.Css.Extensions;
 
 namespace WebApiDemos.Controllers
 {
@@ -34,15 +36,18 @@ namespace WebApiDemos.Controllers
                     zip.AddEntry(new FileInfo(file).Name, inputStream);
                 }
 
-                var memoryStream = new MemoryStream();
-                zip.Save(memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                result = new FileContentResult(memoryStream.ToArray(), "application/octet-stream")
+                using (var memoryStream = new MemoryStream())
                 {
-                    FileDownloadName = "result.zip"
-                };
+                    zip.Save(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+
+                    result = new FileContentResult(memoryStream.ToArray(), "application/octet-stream")
+                    {
+                        FileDownloadName = "result.zip"
+                    };
+                }
             }
+
             return result;
         }
     }
